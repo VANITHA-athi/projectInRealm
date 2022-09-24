@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/layout/activity_event_data.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_login_page.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_update_event.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/activity_view_events.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/event_list_item.xml" value="0.35520833333333335" />
+      </map>
+    </option>
+  </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
+</project>
