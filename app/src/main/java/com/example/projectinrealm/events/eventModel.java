@@ -2,12 +2,13 @@ package com.example.projectinrealm.events;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 
 public class eventModel extends RealmObject {
     @PrimaryKey
     private long id;
-
+    @Required
     private String eventName,eventDate,eventTime;
 
     public long getId() {

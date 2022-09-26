@@ -2,22 +2,28 @@ package com.example.projectinrealm.events;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.projectinrealm.R;
+
+import java.util.Calendar;
 
 import io.realm.Realm;
 
 public class UpdateEvent extends AppCompatActivity {
     private EditText upName,upDate,upTime;
     private Button upBtn,delBtn;
-    private String FestivalName,FestivalDate,FestivalTime;
+    private String festivalName,festivalDate,festivalTime;
     private long id;
     Realm realm;
 
@@ -32,39 +38,81 @@ public class UpdateEvent extends AppCompatActivity {
         upBtn=findViewById(R.id.update);
         delBtn=findViewById(R.id.delete);
 
-        FestivalName=getIntent().getStringExtra("eventName");
-        FestivalDate=getIntent().getStringExtra("eventDate");
-        FestivalTime=getIntent().getStringExtra("eventTime");
+        upDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v == upDate) {
+                    final Calendar c = Calendar.getInstance();
+                    int mYear = c.get(Calendar.YEAR);
+                    int mMonth = c.get(Calendar.MONTH);
+                    int mDay = c.get(Calendar.DAY_OF_MONTH);
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(UpdateEvent.this,
+                            new DatePickerDialog.OnDateSetListener() {
+
+                                @Override
+                                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                    upDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                }
+                            }, mYear, mMonth, mDay);
+                    datePickerDialog.show();
+                }
+            }
+        });
+        upTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v == upTime) {
+                    final Calendar c = Calendar.getInstance();
+                    int mHour = c.get(Calendar.HOUR_OF_DAY);
+                    int mMinute = c.get(Calendar.MINUTE);
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(UpdateEvent.this,
+                            new TimePickerDialog.OnTimeSetListener() {
+
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    upTime.setText(hourOfDay + ":" + minute);
+                                }
+                            }, mHour, mMinute, false);
+                    timePickerDialog.show();
+                }
+            }
+        });
+
+        festivalName=getIntent().getStringExtra("eventName");
+        festivalDate=getIntent().getStringExtra("eventDate");
+        festivalTime=getIntent().getStringExtra("eventTime");
         id=getIntent().getLongExtra("id",0);
 
-        upName.setText(FestivalName);
-        upDate.setText(FestivalDate);
-        upTime.setText(FestivalTime);
+        upName.setText(festivalName);
+        upDate.setText(festivalDate);
+        upTime.setText(festivalTime);
         upBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name=upName.getText().toString();
-                String date=upDate.getText().toString();
-                String time=upTime.getText().toString();
+                String festivalNameS=upName.getText().toString();
+                String festivalDateS=upDate.getText().toString();
+                String festivalTimeS=upTime.getText().toString();
 
-                if (TextUtils.isEmpty(name)){
+                if (TextUtils.isEmpty(festivalNameS)){
                     upName.setError("Update Festival name");
                     return;
-                }if (TextUtils.isEmpty(date)){
+                }if (TextUtils.isEmpty(festivalDateS)){
                     upDate.setError("Update Festival Date");
                     return;
-                }if (TextUtils.isEmpty(time)){
+                }if (TextUtils.isEmpty(festivalTimeS)){
                     upTime.setError("Update Festival time");
-                }else {
-                    final eventModel model = realm.where(eventModel.class).equalTo("id", id).findFirst();
-                    updateDetails(model, FestivalName, FestivalDate, FestivalTime);
+                    return;
                 }
-                Toast.makeText(getApplicationContext(), "Details Updated", Toast.LENGTH_SHORT).show();
-                Intent i=new Intent(getApplicationContext(),ViewEvents.class);
+
+                 final eventModel model = realm.where(eventModel.class).equalTo("id", id).findFirst();
+                updateDetails(model,festivalNameS,festivalDateS,festivalTimeS);
+                Toast.makeText(getApplicationContext(), "Event Updated.", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getApplicationContext(), ViewEvents.class);
                 startActivity(i);
                 finish();
-            }
+                }
         });
+
         delBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,18 +136,23 @@ public class UpdateEvent extends AppCompatActivity {
         });
     }
 
-    private void updateDetails(eventModel model, String FestivalName, String FestivalDate, String FestivalTime) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
+
+    private void updateDetails(eventModel model, String festivalNameS, String festivalDateS, String festivalTimeS) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                model.setEventName(FestivalName);
-                model.setEventDate(FestivalDate);
-                model.setEventTime(FestivalTime);
+                model.setEventName(festivalNameS);
+                model.setEventDate(festivalDateS);
+                model.setEventTime(festivalTimeS);
+                realm.copyToRealmOrUpdate(model);
 
             }
         });
-
-
-
     }
+
 }

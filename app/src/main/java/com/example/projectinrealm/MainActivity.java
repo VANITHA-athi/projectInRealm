@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,10 +15,18 @@ import com.example.projectinrealm.Helper.logRegModel;
 import com.example.projectinrealm.Helper.sharedPreference;
 import com.example.projectinrealm.events.ViewEvents;
 
+import java.util.regex.Pattern;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[@#$%^&+=])" +     // at least 1 special character
+                    "(?=\\S+$)" +            // no white spaces
+                    ".{6,}" +                // at least 6 characters
+                    "$");
     EditText logName,logPass;
     Button singIn;
     Realm realm;
@@ -42,16 +51,19 @@ public class MainActivity extends AppCompatActivity {
         singIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (logName.getText().length()==0){
+                String name=logName.getText().toString();
+                String pass=logPass.getText().toString();
+
+                if (name.isEmpty()&& Patterns.EMAIL_ADDRESS.matcher(name).matches()){
                     logName.setError("Enter Valid Email");
                     logName.requestFocus();
                     return;
-                }if (logPass.getText().length()==0){
+                }if (pass.isEmpty()&&!PASSWORD_PATTERN.matcher(pass).matches()){
                     logPass.setError("Enter valid password");
                     logPass.requestFocus();
                     return;
                 }
-                loginValidate(logName.getText().toString(),logPass.getText().toString());
+                loginValidate(name,pass);
 
             }
         });

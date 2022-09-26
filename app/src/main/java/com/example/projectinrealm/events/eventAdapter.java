@@ -1,22 +1,32 @@
 package com.example.projectinrealm.events;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectinrealm.R;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class eventAdapter extends RecyclerView.Adapter<eventAdapter.ViewHolder> {
+    private static final String TAG = "alertMessage";
     private List<eventModel> eventModelList;
     private Context context;
+    private AlarmManager manager;
 
     public eventAdapter(List<eventModel> eventModelList,Context context){
         this.eventModelList=eventModelList;
@@ -34,6 +44,7 @@ public class eventAdapter extends RecyclerView.Adapter<eventAdapter.ViewHolder> 
         holder.eventName.setText(model.getEventName());
         holder.eventDate.setText(model.getEventDate());
         holder.eventTime.setText(model.getEventTime());
+        //setAlertMessage();
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,11 +55,29 @@ public class eventAdapter extends RecyclerView.Adapter<eventAdapter.ViewHolder> 
                 intent.putExtra("eventTime",model.getEventTime());
                 intent.putExtra("id",model.getId());
                 context.startActivity(intent);
-
-
+                //setAlarm();
             }
         });
     }
+
+    private void setAlarm() {
+
+
+    }
+
+   /* private void setAlertMessage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alert for Events";
+            String description = "Alert for Events";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("NotifyEvents", name, importance);
+            channel.setDescription(description);
+            NotificationManagerCompat manager=getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+
+
+        }
+    }*/
 
     @Override
     public int getItemCount() {

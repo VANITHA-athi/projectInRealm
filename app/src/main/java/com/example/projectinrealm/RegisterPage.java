@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -12,12 +13,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projectinrealm.Helper.logRegModel;
+
+import java.util.regex.Pattern;
+
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 
 public class RegisterPage extends AppCompatActivity {
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[@#$%^&+=])" +     // at least 1 special character
+                    "(?=\\S+$)" +            // no white spaces
+                    ".{6,}" +                // at least 6 characters
+                    "$");
     EditText Email,pass,ConPass;
     Button signup;
     TextView text ,sText;
@@ -44,11 +54,13 @@ public class RegisterPage extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Email.getText().length()==0){
+                String email=Email.getText().toString();
+                String pas=pass.getText().toString();
+                if (email.isEmpty()&& Patterns.EMAIL_ADDRESS.matcher(email).matches()){
                     Email.setError("Enter the Email");
                     Email.requestFocus();
                     return;
-                }if (pass.getText().length()==0){
+                }if (pas.isEmpty()&&!PASSWORD_PATTERN.matcher(pas).matches()){
                     pass.setError("Enter the password");
                     pass.requestFocus();
                     return;
