@@ -107,8 +107,6 @@ public class UpdateEvent extends AppCompatActivity {
                  final eventModel model = realm.where(eventModel.class).equalTo("id", id).findFirst();
                 updateDetails(model,festivalNameS,festivalDateS,festivalTimeS);
                 Toast.makeText(getApplicationContext(), "Event Updated.", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getApplicationContext(), ViewEvents.class);
-                startActivity(i);
                 finish();
                 }
         });
@@ -118,9 +116,7 @@ public class UpdateEvent extends AppCompatActivity {
             public void onClick(View v) {
                 deleteDetails(id);
                 Toast.makeText(getApplicationContext(), "Data deleted!", Toast.LENGTH_SHORT).show();
-                Intent i=new Intent(getApplicationContext(),ViewEvents.class);
-                startActivity(i);
-                finish();
+
             }
         });
     }
@@ -128,12 +124,10 @@ public class UpdateEvent extends AppCompatActivity {
     private void deleteDetails(long id) {
         eventModel model=realm.where(eventModel.class).equalTo("id",id).findFirst();
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                model.deleteFromRealm();
-            }
-        });
+        realm.executeTransaction(realm -> model.deleteFromRealm());
+
+        finish();
+
     }
 
     @Override

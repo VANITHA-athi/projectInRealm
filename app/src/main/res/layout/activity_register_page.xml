@@ -20,7 +20,8 @@
         app:layout_constraintTop_toTopOf="parent" />
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:boxBackgroundColor="#00000000">
         <EditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
@@ -37,7 +38,8 @@
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:boxBackgroundColor="#00000000">
 
 
     <EditText
@@ -56,7 +58,8 @@
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:boxBackgroundColor="#00000000">
 
     <EditText
         android:id="@+id/editTextTextPassword"

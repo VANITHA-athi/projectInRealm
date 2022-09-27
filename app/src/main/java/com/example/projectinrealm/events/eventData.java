@@ -2,12 +2,17 @@ package com.example.projectinrealm.events;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -15,9 +20,8 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import com.example.projectinrealm.R;
-
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -25,6 +29,7 @@ public class eventData extends AppCompatActivity {
         EditText fesName,fesDate,fesTime;
         Button save ;
         Realm realm;
+        Calendar c;
 
 
     @Override
@@ -36,17 +41,16 @@ public class eventData extends AppCompatActivity {
         fesDate = findViewById(R.id.editTextTextPersonName3);
         fesTime = findViewById(R.id.editTextTextPersonName4);
         save = findViewById(R.id.save);
+
         fesDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (v == fesDate) {
 
-                    // Get Current Date
                     final Calendar c = Calendar.getInstance();
                     int mYear = c.get(Calendar.YEAR);
                     int mMonth = c.get(Calendar.MONTH);
                     int mDay = c.get(Calendar.DAY_OF_MONTH);
-
 
                     DatePickerDialog datePickerDialog = new DatePickerDialog(eventData.this,
                             new DatePickerDialog.OnDateSetListener() {
@@ -64,29 +68,28 @@ public class eventData extends AppCompatActivity {
             }
         });
 
-
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 insertData();
                 Toast.makeText(getApplicationContext(), "Details added", Toast.LENGTH_SHORT).show();
-                fesName.setText("");
+                fesName.getText().clear();
                 fesDate.setText("");
                 fesTime.setText("");
+                setAlarm();
+                Intent intent=new Intent(getApplicationContext(),service.class);
+                startService(intent);
+
             }
         });
         fesTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (v == fesTime) {
-
-                    // Get Current Time
-                    final Calendar c = Calendar.getInstance();
+                     c = Calendar.getInstance();
                     int mHour = c.get(Calendar.HOUR_OF_DAY);
                     int mMinute = c.get(Calendar.MINUTE);
 
-                    // Launch Time Picker Dialog
                     TimePickerDialog timePickerDialog = new TimePickerDialog(eventData.this,
                             new TimePickerDialog.OnTimeSetListener() {
 
@@ -103,6 +106,13 @@ public class eventData extends AppCompatActivity {
         });
 
     }
+    private void setAlarm() {
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent i=new Intent(this,myBoardcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+        Toast.makeText(this, "Alert Successful", Toast.LENGTH_SHORT).show();
+    }
 
     private void insertData () {
         String name = fesName.getText().toString();
@@ -110,40 +120,29 @@ public class eventData extends AppCompatActivity {
         String time = fesTime.getText().toString();
 
         if (TextUtils.isEmpty(name)) {
-            fesName.setError("Enter FestivalName");
+            fesName.setError("Enter Festival Name");
             return;
         }
         if (TextUtils.isEmpty(date)) {
-            fesDate.setError("Enter FestivalDate");
+            fesDate.setError("Enter Festival Date");
             return;
         }
         if (TextUtils.isEmpty(time)) {
-            fesTime.setError("Enter FestivalTime");
+            fesTime.setError("Enter Festival Time");
             return;
         }
         eventModel model = new eventModel();
-        Number id = realm.where(eventModel.class).max("id");
-        long nextId;
-        if (id == null) {
-            nextId = 1;
-        } else {
-            nextId = id.intValue() + 1;
-        }
-        model.setId(nextId);
+
+        //model.setId();
         model.setEventName(name);
         model.setEventDate(date);
         model.setEventTime(time);
-        Intent i = new Intent(getApplicationContext(), ViewEvents.class);
-        startActivity(i);
 
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm mReal) {
-                mReal.copyToRealm(model);
+        realm.executeTransaction(mReal -> mReal.copyToRealm(model));
+        finish();
 
-            }
-        });
+
     }
         @Override
         protected void onDestroy() {

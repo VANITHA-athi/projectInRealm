@@ -8,7 +8,8 @@
     tools:context=".events.UpdateEvent">
 <com.google.android.material.textfield.TextInputLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    app:boxBackgroundColor="#00000000">
     <EditText
         android:id="@+id/updateName"
         android:layout_width="match_parent"
@@ -23,7 +24,8 @@
 </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:boxBackgroundColor="#00000000">
         <EditText
         android:id="@+id/updateDate"
         android:layout_width="match_parent"
@@ -32,6 +34,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:ems="10"
+            android:focusable="false"
         android:hint="Festival Date"
         android:inputType="date"
         android:minHeight="48dp"
@@ -39,7 +42,8 @@
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:boxBackgroundColor="#00000000">
 
     <EditText
         android:id="@+id/updateTime"
@@ -49,6 +53,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:ems="10"
+        android:focusable="false"
         android:hint="Festival Time"
         android:inputType="time"
         android:minHeight="48dp"/>

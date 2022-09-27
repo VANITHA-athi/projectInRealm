@@ -1,9 +1,12 @@
 package com.example.projectinrealm.events;
-import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -13,24 +16,35 @@ import com.example.projectinrealm.R;
 public class myBoardcastReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        Intent i=new Intent(context,ViewEvents.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent=PendingIntent.getActivity(context,0,i,0);
-
         NotificationCompat.Builder builder= new NotificationCompat.Builder(context,"NotifyEvents")
                 .setSmallIcon(R.drawable.ic_baseline_notifications_24)
                 .setContentTitle("My Schedule")
                 .setContentText("Alert for Events")
-                .setDefaults(Notification.DEFAULT_SOUND)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent);
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat managerCompat=NotificationManagerCompat.from(context);
         managerCompat.notify(52,builder.build());
 
+        Toast.makeText(context, "Service Running", Toast.LENGTH_SHORT).show();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alert for Events";
+            String description = "Alert for Events";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("NotifyEvents", name, importance);
+            channel.setDescription(description);
+            NotificationManager manager= (NotificationManager)context.getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+        else  restartSchedule(context);
+
+    }
+
+    private void restartSchedule(Context context) {
+        Intent i=new Intent(context,service.class);
+        context.startService(i);
 
     }
 }
