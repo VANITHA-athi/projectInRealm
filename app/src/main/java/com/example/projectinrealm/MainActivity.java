@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         text=findViewById(R.id.text1);
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        sharedPreference preference=new sharedPreference(MainActivity.this);
         text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,31 +65,38 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 loginValidate(name,pass);
-
             }
         });
+        if (preference.isLoggedIn()){
+            startActivity(new Intent(getApplicationContext(),ViewEvents.class));
+            finish();
+        }
 
     }
 
     private void loginValidate(String username, String password) {
         realm=Realm.getDefaultInstance();
+        sharedPreference preference=new sharedPreference(MainActivity.this);
         RealmResults<logRegModel> regModels = realm.where(logRegModel.class).equalTo("username", username).findAll();
         if (regModels.size() > 0) {
             RealmResults<logRegModel> listPass = realm.where(logRegModel.class).equalTo("username", username).equalTo("password", password).findAll();
             if (listPass.size() > 0) {
-                sharedPreference preference=new sharedPreference(MainActivity.this);
-                preference.saveLoginCredenetial(username);
-                Intent main = new Intent(getApplicationContext(), ViewEvents.class);
-                main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(main);
-                MainActivity.this.finish();
+                    preference.setLogin(true);
+                    preference.setUsername(username);
+                    Intent main = new Intent(getApplicationContext(), ViewEvents.class);
+                    main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(main);
+                    MainActivity.this.finish();
+
             } else {
                 Toast.makeText(this, "username&password not match", Toast.LENGTH_SHORT).show();
             }
         }else {
             Toast.makeText(this, "username Not matched", Toast.LENGTH_SHORT).show();
         }
+
     }
+
 
 
 

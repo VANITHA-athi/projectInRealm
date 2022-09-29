@@ -1,12 +1,15 @@
 package com.example.projectinrealm.events;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -26,11 +29,22 @@ public class UpdateEvent extends AppCompatActivity {
     private String festivalName,festivalDate,festivalTime;
     private long id;
     Realm realm;
+    private String a;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent i=new Intent(getApplicationContext(),ViewEvents.class);
+        startActivityForResult(i,0);
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_event);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         realm=Realm.getDefaultInstance();
         upName=findViewById(R.id.updateName);
         upDate=findViewById(R.id.updateDate);
@@ -51,36 +65,21 @@ public class UpdateEvent extends AppCompatActivity {
 
                                 @Override
                                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                    upDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                                    a=(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                                  //  upDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                    timePicker();
                                 }
                             }, mYear, mMonth, mDay);
                     datePickerDialog.show();
                 }
             }
         });
-        upTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v == upTime) {
-                    final Calendar c = Calendar.getInstance();
-                    int mHour = c.get(Calendar.HOUR_OF_DAY);
-                    int mMinute = c.get(Calendar.MINUTE);
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(UpdateEvent.this,
-                            new TimePickerDialog.OnTimeSetListener() {
-
-                                @Override
-                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                    upTime.setText(hourOfDay + ":" + minute);
-                                }
-                            }, mHour, mMinute, false);
-                    timePickerDialog.show();
-                }
-            }
-        });
 
         festivalName=getIntent().getStringExtra("eventName");
         festivalDate=getIntent().getStringExtra("eventDate");
-        festivalTime=getIntent().getStringExtra("eventTime");
+        festivalTime=getIntent().getStringExtra("Description");
         id=getIntent().getLongExtra("id",0);
 
         upName.setText(festivalName);
@@ -94,13 +93,13 @@ public class UpdateEvent extends AppCompatActivity {
                 String festivalTimeS=upTime.getText().toString();
 
                 if (TextUtils.isEmpty(festivalNameS)){
-                    upName.setError("Update Festival name");
+                    upName.setError("Update Event name");
                     return;
                 }if (TextUtils.isEmpty(festivalDateS)){
-                    upDate.setError("Update Festival Date");
+                    upDate.setError("Update Event Date and Time");
                     return;
                 }if (TextUtils.isEmpty(festivalTimeS)){
-                    upTime.setError("Update Festival time");
+                    upTime.setError("Update Description");
                     return;
                 }
 
@@ -120,6 +119,24 @@ public class UpdateEvent extends AppCompatActivity {
             }
         });
     }
+
+    private void timePicker() {
+        final Calendar c = Calendar.getInstance();
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(UpdateEvent.this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        upDate.setText(a+" "+hourOfDay + ":" + minute);
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+    }
+
+
+
 
     private void deleteDetails(long id) {
         eventModel model=realm.where(eventModel.class).equalTo("id",id).findFirst();
@@ -142,7 +159,7 @@ public class UpdateEvent extends AppCompatActivity {
             public void execute(Realm realm) {
                 model.setEventName(festivalNameS);
                 model.setEventDate(festivalDateS);
-                model.setEventTime(festivalTimeS);
+                model.setDescription(festivalTimeS);
                 realm.copyToRealmOrUpdate(model);
 
             }

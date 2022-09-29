@@ -1,18 +1,17 @@
 package com.example.projectinrealm.events;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -25,17 +24,26 @@ import java.util.UUID;
 
 import io.realm.Realm;
 
+
 public class eventData extends AppCompatActivity {
         EditText fesName,fesDate,fesTime;
         Button save ;
         Realm realm;
         Calendar c;
+    private long id;
+    private String date;
 
-
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent i=new Intent(getApplicationContext(),ViewEvents.class);
+        startActivityForResult(i,0);
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         realm = Realm.getDefaultInstance();
+        realm = Realm.getDefaultInstance();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_event_data);
         fesName = findViewById(R.id.editTextTextPersonName2);
         fesDate = findViewById(R.id.editTextTextPersonName3);
@@ -46,7 +54,6 @@ public class eventData extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v == fesDate) {
-
                     final Calendar c = Calendar.getInstance();
                     int mYear = c.get(Calendar.YEAR);
                     int mMonth = c.get(Calendar.MONTH);
@@ -59,7 +66,8 @@ public class eventData extends AppCompatActivity {
                                 public void onDateSet(DatePicker view, int year,
                                                       int monthOfYear, int dayOfMonth) {
 
-                                    fesDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                    date=(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                    timePicker();
 
                                 }
                             }, mYear, mMonth, mDay);
@@ -72,39 +80,15 @@ public class eventData extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insertData();
-                Toast.makeText(getApplicationContext(), "Details added", Toast.LENGTH_SHORT).show();
                 fesName.getText().clear();
-                fesDate.setText("");
-                fesTime.setText("");
+                fesDate.getText().clear();
+                fesTime.getText().clear();
                 setAlarm();
-                Intent intent=new Intent(getApplicationContext(),service.class);
+                Intent intent = new Intent(getApplicationContext(), service.class);
                 startService(intent);
 
             }
         });
-        fesTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v == fesTime) {
-                     c = Calendar.getInstance();
-                    int mHour = c.get(Calendar.HOUR_OF_DAY);
-                    int mMinute = c.get(Calendar.MINUTE);
-
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(eventData.this,
-                            new TimePickerDialog.OnTimeSetListener() {
-
-                                @Override
-                                public void onTimeSet(TimePicker view, int hourOfDay,
-                                                      int minute) {
-
-                                    fesTime.setText(hourOfDay + ":" + minute);
-                                }
-                            }, mHour, mMinute, false);
-                    timePickerDialog.show();
-                }
-            }
-        });
-
     }
     private void setAlarm() {
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -113,45 +97,58 @@ public class eventData extends AppCompatActivity {
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
         Toast.makeText(this, "Alert Successful", Toast.LENGTH_SHORT).show();
     }
+    public void timePicker(){
+        c = Calendar.getInstance();
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
 
-    private void insertData () {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(eventData.this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+
+                        fesDate.setText(date+" "+hourOfDay + ":" + minute);
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+
+    }
+    public void insertData() {
         String name = fesName.getText().toString();
         String date = fesDate.getText().toString();
-        String time = fesTime.getText().toString();
+        String des = fesTime.getText().toString();
 
         if (TextUtils.isEmpty(name)) {
-            fesName.setError("Enter Festival Name");
+            fesName.setError("Enter Event Name");
             return;
         }
         if (TextUtils.isEmpty(date)) {
-            fesDate.setError("Enter Festival Date");
+            fesDate.setError("Enter Event Date and Time");
             return;
         }
-        if (TextUtils.isEmpty(time)) {
-            fesTime.setError("Enter Festival Time");
+        if (TextUtils.isEmpty(des)) {
+            fesTime.setError("Enter Description");
             return;
         }
         eventModel model = new eventModel();
-
-        //model.setId();
+        id=UUID.randomUUID().getLeastSignificantBits();
+        model.setId(id);
         model.setEventName(name);
         model.setEventDate(date);
-        model.setEventTime(time);
-
+        model.setDescription(des);
 
         realm.executeTransaction(mReal -> mReal.copyToRealm(model));
         finish();
 
 
     }
-        @Override
-        protected void onDestroy() {
-            super.onDestroy();
-            realm.close();
-        }
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
 
 
 }

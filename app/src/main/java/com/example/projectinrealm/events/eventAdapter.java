@@ -33,14 +33,14 @@ public class eventAdapter extends RecyclerView.Adapter<eventAdapter.ViewHolder> 
         eventModel model=eventModelList.get(position);
         holder.eventName.setText(model.getEventName());
         holder.eventDate.setText(model.getEventDate());
-        holder.eventTime.setText(model.getEventTime());
+        holder.eventTime.setText(model.getDescription());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context,UpdateEvent.class);
                 intent.putExtra("eventName",model.getEventName());
                 intent.putExtra("eventDate",model.getEventDate());
-                intent.putExtra("eventTime",model.getEventTime());
+                intent.putExtra("Description",model.getDescription());
                 intent.putExtra("id",model.getId());
                 context.startActivity(intent);
 

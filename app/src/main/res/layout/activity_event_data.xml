@@ -14,7 +14,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
-        android:text="Festive Events"
+        android:text="Events"
         android:textSize="22sp"
         android:layout_gravity="center"
         android:textColor="@color/black"
@@ -30,14 +30,14 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="50dp"
             android:layout_marginEnd="20dp"
-            android:hint="FestivalName"
+            android:hint="Events Name"
             android:inputType="textPersonName"
             android:minHeight="48dp"/>
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxBackgroundColor="#00000000">>
+        app:boxBackgroundColor="#00000000">
 
         <EditText
             android:id="@+id/editTextTextPersonName3"
@@ -47,7 +47,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:ems="10"
-            android:hint="FestivalDate"
+            android:hint="Event Date|Time"
             android:inputType="date"
             android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,7 +57,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxBackgroundColor="#00000000">>
+        app:boxBackgroundColor="#00000000">
         <EditText
             android:id="@+id/editTextTextPersonName4"
             android:layout_width="match_parent"
@@ -66,16 +66,14 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:ems="10"
-            android:hint="FestivalTime"
-            android:inputType="time"
+            android:hint="Description"
+            android:inputType="textLongMessage"
             android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
 
     <Button
         android:layout_width="match_parent"

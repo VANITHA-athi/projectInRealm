@@ -1,5 +1,7 @@
 package com.example.projectinrealm.events;
 
+import java.util.UUID;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -9,14 +11,14 @@ public class eventModel extends RealmObject {
     @PrimaryKey
     private long id;
     @Required
-    private String eventName,eventDate,eventTime;
+    private String eventName,eventDate,Description;
 
     public long getId() {
         return id;
     }
 
     public void setId(long id) {
-        this.id = id;
+        this. id= id;
     }
 
     public String getEventName() {
@@ -35,11 +37,11 @@ public class eventModel extends RealmObject {
         this.eventDate = eventDate;
     }
 
-    public String getEventTime() {
-        return eventTime;
+    public String getDescription() {
+        return Description;
     }
-    public void setEventTime(String eventTime) {
-        this.eventTime = eventTime;
+    public void setDescription(String eventTime) {
+        this.Description = eventTime;
     }
     public eventModel(){
 

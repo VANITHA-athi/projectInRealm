@@ -4,6 +4,7 @@
     package="com.example.projectinrealm">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application

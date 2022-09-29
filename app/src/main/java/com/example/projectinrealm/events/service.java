@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,38 +28,31 @@ public class service extends Service {
         Log.e(TAG,"Service is running..");
         return service.START_STICKY;
     }
-
-    @Override
-    public void onDestroy() {
-        sendBroadcast();
-        super.onDestroy();
-    }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        sendBroadcast();
-        super.onTaskRemoved(rootIntent);
-    }
     public void sendBroadcast(){
-        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        
         Intent i=new Intent(this,myBoardcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
         Toast.makeText(this, "Alert Successful", Toast.LENGTH_SHORT).show();
+        Calendar calendar=Calendar.getInstance();
+        createAlarm(this,pendingIntent,calendar.getTimeInMillis());
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 5);
-        if (alarmManager != null)
-        {
-            //System.currentTimeMillis() + (i * 100),
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 6000000, pendingIntent);
+
+    }
+    private void createAlarm(Context context,PendingIntent intent,long timeInMilli) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if(alarmManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMilli, intent);
+                } else {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMilli,intent);
+                }
         }
+
     }
 
 
