@@ -35,7 +35,9 @@ public class UpdateEvent extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent i=new Intent(getApplicationContext(),ViewEvents.class);
         startActivityForResult(i,0);
+        finish();
         return super.onOptionsItemSelected(item);
+
     }
 
     @Override

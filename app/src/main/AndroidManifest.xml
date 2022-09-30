@@ -4,7 +4,7 @@
     package="com.example.projectinrealm">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -27,7 +27,6 @@
         <activity
             android:name=".events.ViewEvents"
             android:exported="false" />
-
         <activity
             android:name=".RegisterPage"
             android:exported="false" />
@@ -39,15 +38,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <receiver android:name=".events.myBoardcastReceiver"
-            android:process=":remote">
-        </receiver>
-        <service android:name=".events.service"
-            android:exported="false" >
-        </service>
 
+        <receiver
+            android:name=".events.myBoardcastReceiver"
+            android:process=":remote">
+
+        </receiver>
+
+        <service
+            android:name=".events.service"
+            android:exported="false">
+
+        </service>
     </application>
 
 </manifest>

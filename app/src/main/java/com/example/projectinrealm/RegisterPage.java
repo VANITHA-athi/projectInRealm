@@ -64,7 +64,7 @@ public class RegisterPage extends AppCompatActivity {
                     pass.setError("Enter the password");
                     pass.requestFocus();
                     return;
-                }if (ConPass.getText().length()==0){
+                }if (pass.equals(ConPass)){
                     ConPass.setError("Enter the confirm password");
                     ConPass.requestFocus();
                     return;
