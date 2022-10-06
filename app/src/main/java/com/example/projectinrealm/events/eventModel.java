@@ -9,15 +9,25 @@ import io.realm.annotations.Required;
 
 public class eventModel extends RealmObject {
     @PrimaryKey
-    private long id;
+    private String id;
     @Required
     private String eventName,eventDate,Description;
 
-    public long getId() {
+    private String userId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this. id= id;
     }
 

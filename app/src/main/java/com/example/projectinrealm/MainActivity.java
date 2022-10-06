@@ -14,10 +14,12 @@ import android.widget.Toast;
 import com.example.projectinrealm.Helper.logRegModel;
 import com.example.projectinrealm.Helper.sharedPreference;
 import com.example.projectinrealm.events.ViewEvents;
+import com.example.projectinrealm.events.eventModel;
 
 import java.util.regex.Pattern;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     Button singIn;
     Realm realm;
     TextView text;
+    String user_Id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(),ViewEvents.class));
             finish();
         }
+        if (preference.getUserLogin()){
+            startActivity(new Intent(getApplicationContext(),ViewEvents.class));
+            finish();
+        }
 
     }
 
@@ -79,10 +86,12 @@ public class MainActivity extends AppCompatActivity {
         sharedPreference preference=new sharedPreference(MainActivity.this);
         RealmResults<logRegModel> regModels = realm.where(logRegModel.class).equalTo("username", username).findAll();
         if (regModels.size() > 0) {
-            RealmResults<logRegModel> listPass = realm.where(logRegModel.class).equalTo("username", username).equalTo("password", password).findAll();
-            if (listPass.size() > 0) {
-                    preference.setLogin(true);
-                    preference.setUsername(username);
+            logRegModel listPass = realm.where(logRegModel.class).equalTo("username", username).equalTo("password", password).findFirst();
+            if (listPass!=null) {
+                preference.setLogin(true);
+                    preference.setUserLogin(true);
+                    preference.setUsername(listPass.getUsername());
+                    preference.setUserID(String.valueOf(listPass.getId()));
                     Intent main = new Intent(getApplicationContext(), ViewEvents.class);
                     main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(main);

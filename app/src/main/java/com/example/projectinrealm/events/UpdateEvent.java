@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.projectinrealm.R;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -27,7 +28,8 @@ public class UpdateEvent extends AppCompatActivity {
     private EditText upName,upDate,upTime;
     private Button upBtn,delBtn;
     private String festivalName,festivalDate,festivalTime;
-    private long id;
+    private String id;
+    private String userId;
     Realm realm;
     private String a;
 
@@ -82,7 +84,8 @@ public class UpdateEvent extends AppCompatActivity {
         festivalName=getIntent().getStringExtra("eventName");
         festivalDate=getIntent().getStringExtra("eventDate");
         festivalTime=getIntent().getStringExtra("Description");
-        id=getIntent().getLongExtra("id",0);
+        id=getIntent().getStringExtra("id");
+        userId=getIntent().getStringExtra("userId");
 
         upName.setText(festivalName);
         upDate.setText(festivalDate);
@@ -105,8 +108,8 @@ public class UpdateEvent extends AppCompatActivity {
                     return;
                 }
 
-                 final eventModel model = realm.where(eventModel.class).equalTo("id", id).findFirst();
-                updateDetails(model,festivalNameS,festivalDateS,festivalTimeS);
+                final eventModel model = realm.where(eventModel.class).equalTo("id", id).equalTo("userId",userId).findFirst();
+                updateDetails(model,festivalNameS,festivalDateS,festivalTimeS,userId);
                 Toast.makeText(getApplicationContext(), "Event Updated.", Toast.LENGTH_SHORT).show();
                 finish();
                 }
@@ -140,13 +143,10 @@ public class UpdateEvent extends AppCompatActivity {
 
 
 
-    private void deleteDetails(long id) {
+    private void deleteDetails(String id) {
         eventModel model=realm.where(eventModel.class).equalTo("id",id).findFirst();
-
         realm.executeTransaction(realm -> model.deleteFromRealm());
-
         finish();
-
     }
 
     @Override
@@ -155,13 +155,14 @@ public class UpdateEvent extends AppCompatActivity {
         realm.close();
     }
 
-    private void updateDetails(eventModel model, String festivalNameS, String festivalDateS, String festivalTimeS) {
+    private void updateDetails(eventModel model, String festivalNameS, String festivalDateS, String festivalTimeS,String userId) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 model.setEventName(festivalNameS);
                 model.setEventDate(festivalDateS);
                 model.setDescription(festivalTimeS);
+                model.setUserId(userId);
                 realm.copyToRealmOrUpdate(model);
 
             }

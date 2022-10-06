@@ -18,34 +18,41 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.example.projectinrealm.Helper.sharedPreference;
 import com.example.projectinrealm.R;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import io.realm.Realm;
 
 
 public class eventData extends AppCompatActivity {
-        EditText fesName,fesDate,fesTime;
-        Button save ;
-        Realm realm;
-        Calendar c;
-    private long id;
-    private String date,time;
-    String name,Date,des;
+    EditText fesName, fesDate, fesTime;
+    Button save;
+    Realm realm;
+    Calendar c;
+
+    private String date;
+    private String name, Date, des;
+    private String userId;
+    sharedPreference preference;
+    private int calyear,calmonthOfYear,caldayOfMonth;
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent i=new Intent(getApplicationContext(),ViewEvents.class);
-        startActivityForResult(i,0);
+        Intent i = new Intent(getApplicationContext(), ViewEvents.class);
+        startActivityForResult(i, 0);
         finish();
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +62,11 @@ public class eventData extends AppCompatActivity {
         fesName = findViewById(R.id.editTextTextPersonName2);
         fesDate = findViewById(R.id.editTextTextPersonName3);
         fesTime = findViewById(R.id.editTextTextPersonName4);
-
         save = findViewById(R.id.save);
+
+
+        preference = new sharedPreference(eventData.this);
+        userId = preference.getUserID();
 
         fesDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +83,18 @@ public class eventData extends AppCompatActivity {
                                 @Override
                                 public void onDateSet(DatePicker view, int year,
                                                       int monthOfYear, int dayOfMonth) {
+                                    Calendar newDate = Calendar.getInstance();
 
-                                    date=(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                    calyear = year;
+                                    calmonthOfYear = monthOfYear;
+                                    caldayOfMonth = dayOfMonth;
+
+                                    newDate.set(year, monthOfYear, dayOfMonth);
+
+
+                                    SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+
+                                    date = formater.format(newDate.getTime());
                                     timePicker();
 
                                 }
@@ -83,7 +103,6 @@ public class eventData extends AppCompatActivity {
                 }
             }
         });
-
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,36 +110,14 @@ public class eventData extends AppCompatActivity {
                 fesName.getText().clear();
                 fesDate.getText().clear();
                 fesTime.getText().clear();
-                try {
-                    setAlarm();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                setAlarm(name, Date, des);
+
             }
+
         });
     }
-    private void setAlarm() throws ParseException {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(this, myBoardcastReceiver.class);
-        i.putExtra("eventName", name);
-        i.putExtra("eventDate", Date);
-        i.putExtra("Description", des);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
-        String dateAndTime = Date;
-        DateFormat format = new SimpleDateFormat("d-M-yyyy  hh:mm");
-        try {
-            java.util.Date dt = format.parse(dateAndTime);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, dt.getTime(), pendingIntent);
-            Toast.makeText(this, "Alert Successful", Toast.LENGTH_SHORT).show();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent(getApplicationContext(), service.class);
-        startService(intent);
 
-
-    }
-    public void timePicker(){
+    public void timePicker() {
         c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
         int mMinute = c.get(Calendar.MINUTE);
@@ -132,13 +129,51 @@ public class eventData extends AppCompatActivity {
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
 
-                        fesDate.setText(date+" "+hourOfDay + ":" + minute);
+
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(calyear, calmonthOfYear, caldayOfMonth, hourOfDay, minute);
+
+
+                        SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+
+                        // date = formater.format(newDate.getTime());
+
+                        //  fesDate.setText(date + " " + hourOfDay + ":" + minute);
+                        fesDate.setText(formater.format(newDate.getTime()));
 
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
 
     }
+
+    private String setAlarm(String name, String Date, String des) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(this, myBoardcastReceiver.class);
+        i.putExtra("eventName", name);
+        i.putExtra("eventDate", Date);
+        i.putExtra("Description", des);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+        String _date = "yyyy-MM-dd hh:mm a";
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+        SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+        try {
+            Date dt = format.parse(Date);
+            assert dt != null;
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dt.getTime(), pendingIntent);
+            Toast.makeText(this, "Alert Successful", Toast.LENGTH_SHORT).show();
+            return format1.format(dt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+            Intent intent = new Intent(getApplicationContext(), service.class);
+            startService(intent);
+            return "";
+
+        }
+
+    }
+
     public void insertData() {
         name = fesName.getText().toString();
         Date = fesDate.getText().toString();
@@ -157,8 +192,8 @@ public class eventData extends AppCompatActivity {
             return;
         }
         eventModel model = new eventModel();
-        id=UUID.randomUUID().getLeastSignificantBits();
-        model.setId(id);
+        model.setUserId(userId);
+        model.setId(UUID.randomUUID().toString());
         model.setEventName(name);
         model.setEventDate(Date);
         model.setDescription(des);
@@ -168,6 +203,7 @@ public class eventData extends AppCompatActivity {
 
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

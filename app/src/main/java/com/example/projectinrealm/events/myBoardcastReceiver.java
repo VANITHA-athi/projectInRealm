@@ -20,7 +20,7 @@ public class myBoardcastReceiver extends BroadcastReceiver{
        String text = new String(),date = new String(),des = new String();
        Intent intent1=new Intent(context,eventAdapter.class);
         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent1.putExtra("eventName", text);
+        intent1.putExtra("eventName",text);
         intent1.putExtra("eventDate",date);
         intent1.putExtra("Description",des);
         PendingIntent pendingIntent=PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -39,7 +39,7 @@ public class myBoardcastReceiver extends BroadcastReceiver{
         builder.setAutoCancel(true);
         builder.build().flags = Notification.FLAG_AUTO_CANCEL | Notification.PRIORITY_HIGH;
         builder.setContentIntent(pendingIntent);
-        Toast.makeText(context, "Service Running", Toast.LENGTH_SHORT).show();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId="channelId";
             NotificationChannel channel = new NotificationChannel(channelId,"Schedule Events",NotificationManager.IMPORTANCE_HIGH);
@@ -48,7 +48,7 @@ public class myBoardcastReceiver extends BroadcastReceiver{
             builder.setChannelId(channelId);
         }
         Notification notification = builder.build();
-        managerCompat.notify(1, notification);
+        managerCompat.notify(25, notification);
 
 
 

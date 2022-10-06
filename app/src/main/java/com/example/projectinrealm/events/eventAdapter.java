@@ -42,6 +42,7 @@ public class eventAdapter extends RecyclerView.Adapter<eventAdapter.ViewHolder> 
                 intent.putExtra("eventDate",model.getEventDate());
                 intent.putExtra("Description",model.getDescription());
                 intent.putExtra("id",model.getId());
+                intent.putExtra("userId",model.getUserId());
                 context.startActivity(intent);
 
             }
