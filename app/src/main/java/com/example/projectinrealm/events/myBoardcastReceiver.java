@@ -15,30 +15,46 @@ import androidx.core.app.NotificationCompat;
 import com.example.projectinrealm.R;
 
 public class myBoardcastReceiver extends BroadcastReceiver{
+
     @Override
     public void onReceive(Context context, Intent intent) {
-       String text = new String(),date = new String(),des = new String();
-       Intent intent1=new Intent(context,eventAdapter.class);
-        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent1.putExtra("eventName",text);
-        intent1.putExtra("eventDate",date);
-        intent1.putExtra("Description",des);
-        PendingIntent pendingIntent=PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationManager managerCompat= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder= new NotificationCompat.Builder(context,"NotifyEvents");
+        Bundle bundle=intent.getExtras();
+        String text=bundle.getString("eventName");
+        String date=bundle.getString("eventDate");
+        String des=bundle.getString("Description");
 
-        @SuppressLint("RemoteViewLayout")
-        RemoteViews remoteViews=new RemoteViews(context.getPackageName(),R.layout.activity_event_data);
-        remoteViews.setTextViewText(R.id.eventNameId,text);
-        remoteViews.setTextViewText(R.id.eventDateId,date);
-        remoteViews.setTextViewText(R.id.eventTimeId,des);
-        builder.setSmallIcon(R.drawable.ic_baseline_notifications_24);
-        builder.setOngoing(true);
-        builder.setOnlyAlertOnce(true);
-        builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
-        builder.setAutoCancel(true);
-        builder.build().flags = Notification.FLAG_AUTO_CANCEL | Notification.PRIORITY_HIGH;
-        builder.setContentIntent(pendingIntent);
+       Intent intent1=new Intent(context,ViewEvents.class);
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      //  intent1.putExtra("title",text);
+       // intent1.putExtra("Date",date);
+     //   intent1.putExtra("description",des);
+       PendingIntent pendingIntent=PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_IMMUTABLE);
+        NotificationManager managerCompat= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+       NotificationCompat.Builder builder= new NotificationCompat.Builder(context,"NotifyEvents");
+
+
+        /*NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"")
+                .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+                .setContentTitle(text)
+                .setContentText(date+"--"+des)
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        Notification notification = builder.build();
+        managerCompat.notify(67,notification);*/
+
+
+         RemoteViews remoteViews=new RemoteViews(context.getPackageName(),R.layout.activity_notification);
+         remoteViews.setImageViewResource(R.id.icon,R.drawable.ic_baseline_notifications_24);
+         remoteViews.setTextViewText(R.id.message,text);
+         remoteViews.setTextViewText(R.id.date,date);
+         remoteViews.setTextViewText(R.id.des,des);
+         builder.setOnlyAlertOnce(true);
+         builder.setSmallIcon(R.drawable.ic_baseline_notifications_24);
+         builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
+         builder.setAutoCancel(true);
+         builder.build().flags = Notification.FLAG_AUTO_CANCEL | Notification.PRIORITY_HIGH;
+         builder.setContentIntent(pendingIntent);
+         builder.setCustomContentView(remoteViews);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId="channelId";
@@ -47,8 +63,8 @@ public class myBoardcastReceiver extends BroadcastReceiver{
             managerCompat.createNotificationChannel(channel);
             builder.setChannelId(channelId);
         }
-        Notification notification = builder.build();
-        managerCompat.notify(25, notification);
+       Notification notification = builder.build();
+       managerCompat.notify(25, notification);
 
 
 

@@ -3,6 +3,7 @@ package com.example.projectinrealm.events;
 import android.content.Context;
 import android.content.Intent;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class eventAdapter extends RecyclerView.Adapter<eventAdapter.ViewHolder> 
     }
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Log.e("position", String.valueOf(position));
         eventModel model=eventModelList.get(position);
         holder.eventName.setText(model.getEventName());
         holder.eventDate.setText(model.getEventDate());

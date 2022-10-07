@@ -19,6 +19,9 @@
         android:theme="@style/Theme.ProjectInRealm"
         tools:targetApi="32">
         <activity
+            android:name=".events.notification"
+            android:exported="false" />
+        <activity
             android:name=".events.UpdateEvent"
             android:exported="false" />
         <activity
@@ -46,11 +49,6 @@
 
         </receiver>
 
-        <service
-            android:name=".events.service"
-            android:exported="false">
-
-        </service>
     </application>
 
 </manifest>

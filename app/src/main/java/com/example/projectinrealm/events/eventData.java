@@ -91,7 +91,6 @@ public class eventData extends AppCompatActivity {
 
                                     newDate.set(year, monthOfYear, dayOfMonth);
 
-
                                     SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
                                     date = formater.format(newDate.getTime());
@@ -150,10 +149,15 @@ public class eventData extends AppCompatActivity {
     private String setAlarm(String name, String Date, String des) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, myBoardcastReceiver.class);
+     //   Bundle bundle=new Bundle();
+      //  bundle.putString("eventName",name);
+      //  bundle.putString("eventDate",Date);
+       // bundle.putString("Description",des);
         i.putExtra("eventName", name);
         i.putExtra("eventDate", Date);
         i.putExtra("Description", des);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+        //startActivity(i);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_IMMUTABLE);
         String _date = "yyyy-MM-dd hh:mm a";
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
         SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
@@ -166,8 +170,8 @@ public class eventData extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
 
-            Intent intent = new Intent(getApplicationContext(), service.class);
-            startService(intent);
+           // Intent intent = new Intent(getApplicationContext(), ViewEvents.class);
+            //startActivity(intent);
             return "";
 
         }
@@ -210,6 +214,9 @@ public class eventData extends AppCompatActivity {
         realm.close();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }
 

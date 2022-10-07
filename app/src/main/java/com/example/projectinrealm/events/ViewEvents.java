@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.projectinrealm.MainActivity;
 import com.example.projectinrealm.R;
@@ -54,7 +55,9 @@ public class ViewEvents extends AppCompatActivity {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                prepareRecyclerView();
+
+                adapter.notifyDataSetChanged();
+              //  prepareRecyclerView();
                 layout.setRefreshing(false);
 
             }
@@ -68,8 +71,12 @@ public class ViewEvents extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+
         eventModelList = new ArrayList<>();
         prepareRecyclerView();
+
+        Toast.makeText(this,"oncreate",Toast.LENGTH_SHORT).show();
     }
 
     private void prepareRecyclerView() {
@@ -104,5 +111,46 @@ public class ViewEvents extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(this,"onresume",Toast.LENGTH_SHORT).show();
+       // adapter.notifyDataSetChanged();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Toast.makeText(this,"onstart",Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Toast.makeText(this,"onstop",Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(this,"onrestart",Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Toast.makeText(this,"onpause",Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this,"ondestroy",Toast.LENGTH_SHORT).show();
+
+    }
 }

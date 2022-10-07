@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,7 +22,11 @@ import android.widget.Toast;
 
 import com.example.projectinrealm.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -30,6 +37,7 @@ public class UpdateEvent extends AppCompatActivity {
     private String festivalName,festivalDate,festivalTime;
     private String id;
     private String userId;
+    private  int calYear,calMonthOfYear,calDayOfMonth;
     Realm realm;
     private String a;
 
@@ -69,8 +77,20 @@ public class UpdateEvent extends AppCompatActivity {
 
                                 @Override
                                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                    Calendar newDate = Calendar.getInstance();
 
-                                    a=(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                    calYear = year;
+                                    calMonthOfYear = monthOfYear;
+                                    calDayOfMonth = dayOfMonth;
+
+                                    newDate.set(year, monthOfYear, dayOfMonth);
+
+
+                                    SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+
+                                    a= formater.format(newDate.getTime());
+
+                                   // a=(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
 
                                   //  upDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
                                     timePicker();
@@ -111,6 +131,7 @@ public class UpdateEvent extends AppCompatActivity {
                 final eventModel model = realm.where(eventModel.class).equalTo("id", id).equalTo("userId",userId).findFirst();
                 updateDetails(model,festivalNameS,festivalDateS,festivalTimeS,userId);
                 Toast.makeText(getApplicationContext(), "Event Updated.", Toast.LENGTH_SHORT).show();
+                setAlarm(festivalNameS,festivalDateS,festivalTimeS);
                 finish();
                 }
         });
@@ -120,6 +141,7 @@ public class UpdateEvent extends AppCompatActivity {
             public void onClick(View v) {
                 deleteDetails(id);
                 Toast.makeText(getApplicationContext(), "Data deleted!", Toast.LENGTH_SHORT).show();
+                finish();
 
             }
         });
@@ -134,7 +156,13 @@ public class UpdateEvent extends AppCompatActivity {
 
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        upDate.setText(a+" "+hourOfDay + ":" + minute);
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(calYear, calMonthOfYear, calDayOfMonth, hourOfDay, minute);
+
+
+                        SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+                        upDate.setText(formater.format(newDate.getTime()));
+                        //upDate.setText(a+" "+hourOfDay + ":" + minute);
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
@@ -153,6 +181,36 @@ public class UpdateEvent extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         realm.close();
+    }
+    private String setAlarm(String name, String Date, String des) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(this, myBoardcastReceiver.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("eventName",name);
+        bundle.putString("eventDate",Date);
+        bundle.putString("Description",des);
+        i.putExtra("eventName", name);
+        i.putExtra("eventDate", Date);
+        i.putExtra("Description", des);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+        String _date = "yyyy-MM-dd hh:mm a";
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+        SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+        try {
+            java.util.Date dt = format.parse(Date);
+            assert dt != null;
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dt.getTime(), pendingIntent);
+            Toast.makeText(this, "Alert Successful", Toast.LENGTH_SHORT).show();
+            return format1.format(dt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+            Intent intent = new Intent(getApplicationContext(), ViewEvents.class);
+            startActivity(intent);
+            return "";
+
+        }
+
     }
 
     private void updateDetails(eventModel model, String festivalNameS, String festivalDateS, String festivalTimeS,String userId) {
